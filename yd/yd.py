@@ -102,7 +102,10 @@ class dicti:
         except:
             print 'word \'%s\' not found!' %(self.word)
 
+def main():
+    tmp = dicti()
+    if len(sys.argv) > 1:
+        tmp.search(sys.argv[1])
 
-tmp = dicti()
-if len(sys.argv) > 1:
-    tmp.search(sys.argv[1])
+if __name__ == '__main__':
+    main()
