@@ -1,4 +1,8 @@
+#!/bin/python
+#coding=utf-8
+
 import ydsearch as yd
+import sys, getopts
 import diskcache, dbcache
 
 def fetch_initdata():
@@ -6,9 +10,9 @@ def fetch_initdata():
     with open('/home/{}/.yd/.info'.format(getuser())) as fp:
         initinfo = fp.read().split('&')[0]
         if initinfo == 'db':
-            return dbcache.search
+            return dbcache
         elif initinfo == 'disk':
-            return diskcache.search
+            return diskcache
     except:
         return None
 
@@ -26,7 +30,6 @@ def parse_args():
     help += "-v, --version           "
     help += "output version information and exit\n"
 
-    import sys, getopts
     opts, args = getopts.getopts(sys.argv[1:], "s:u:p:hv", ['save-to=', 'user=', 'password=', 'help', 'version', 'skip-init'])
     for opt,value in opts:
         if opt in ('-h', '--help'):
@@ -47,15 +50,38 @@ def parse_args():
     #if has inited
     handler = fetch_initdata()
     if handler:
-        handler(args)
-        exit(0)
+        return handler, args
+    elif skipinit:
+        return None, args
 
     #haven't init the cache directory
     if whcache != 'disk' and dbcache.init(username, password):
         pass
     else:
         diskcache.init()
+    return None, args
 
+def output(dic):
+    print '\033[0;31m', dic[0],
+    for mark in dic[1]:
+        print '\033[0;32m', mark,
+    print ''
+    for item in dic[2]:
+        print '\033[0;33m', item
+    print ''
+    count = 0
+    for exi in dic[3]:
+        count = count + 1
+        if (count % 2 != 0):
+            print '\033[0;34m', 'ex.', exi
+        else:
+            print '\033[0;35m', '   ', exi
+    print '\033[0m'
 
 if __name__ == "__main__":
-    parse_args()
+#   search here means fetch data and output relative info
+    handler, args = parse_args()
+    if not handler or not handler.search(args)
+        dictinfo = yd.search(args)
+        output(dictinfo)
+        handler.save(dictinfo)

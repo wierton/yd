@@ -38,11 +38,18 @@ def check_priviledge():
 
 def init(username="", password=""):
     print 'To cache the search history, we need access permission for your local database'
-    sys.stdout.write('user:')
-    user = raw_input()
-    sys.stdout.write('password:')
-    passwd = raw_input()
+    if username == '' or password == '':
+        sys.stdout.write('user:')
+        user = raw_input()
+        sys.stdout.write('password:')
+        passwd = raw_input()
+    else:
+        user = username
+        passwd = password
+
+    #check if has access permission to database
     check_priviledge()
+
     if priviledge & create_priv:
         db = sql.connect('localhost', user, passwd, '')
         cursor = db.cursor()
@@ -58,23 +65,26 @@ def init(username="", password=""):
     else:
         print 'fail to create database "yd_cache"'
 
-def query_word(word):
+def search(args):
+    word = args[0]
     qword = quote(word)
     db = sql.connect('localhost', user, passwd, 'yd_cache')
     cursor = db.cursor()
     cursor.execute('select * from dict where word="{}"'.format(qword))
     result = cursor.fetchone()
     db.close()
-    soundmark = unquote(result[1])
-    definition = map(unquote, result[2].split('&'))
-    examples = map(unquote, result[3].split('&'))
-    return soundmark, definition, examples
+    if result:
+        soundmark = map(unquote, result[1].split('&'))
+        definition = map(unquote, result[2].split('&'))
+        examples = map(unquote, result[3].split('&'))
+        return word, soundmark, definition, examples
 
-def save_word(dic):
-    word = quote(dic.word)
-    soundmark = quote(dic.soundmark)
-    definition = '&'.join(map(quote, self.definition))
-    examples = '&'.join(map(quote, self.examples))
+def save(dic):
+#   [word, soundmark, definition, examples]
+    word = quote(dic[0])
+    soundmark = '&'.join(map(quote, dic[1]))
+    definition = '&'.join(map(quote, dic[2]))
+    examples = '&'.join(map(quote, dic[3]))
 
     db = sql.connect('localhost', user, passwd, "yd_cache")
     cursor = db.cursor()
