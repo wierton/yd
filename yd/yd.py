@@ -1,111 +1,61 @@
-#!/bin/python2.7
-#coding=utf-8
+import ydsearch as yd
+import diskcache, dbcache
 
-import re
-import sys
-import urllib
-import urllib2
+def fetch_initdata():
+    from getpass import getuser
+    with open('/home/{}/.yd/.info'.format(getuser())) as fp:
+        initinfo = fp.read().split('&')[0]
+        if initinfo == 'db':
+            return dbcache.search
+        elif initinfo == 'disk':
+            return diskcache.search
+    except:
+        return None
 
-class dicti:
-    def __init__(self):
-        self.isen  = True
-        self.dicti = 'http://dict.youdao.com/w/eng/'
-        self.word  = ''
-        self.html  = ''
-        self.soundmark  = ''
-        self.definition = []
-        self.examples   = []
+def parse_args():
+    help  = "yd [options] word\n"
+    help += "\n"
+    help += "-s, --save-to=[db|disk] "
+    help += "designate the place for local cache\n"
+    help += "-u, --user=[name]       "
+    help += "set the user to access local database\n"
+    help += "-p, --password=[passwd] "
+    help += "set the password corresponding to the user name\n"
+    help += "-h, --help              "
+    help += "display the help and exit\n"
+    help += "-v, --version           "
+    help += "output version information and exit\n"
 
-    def get_html(self):
-        try:
-            request   = urllib2.Request(self.dicti + self.word)
-            response  = urllib2.urlopen(request)
-            self.html = response.read()
-        except urllib2.URLError, e:
-            if hasattr(e, 'reason'):
-                print e.reason
+    import sys, getopts
+    opts, args = getopts.getopts(sys.argv[1:], "s:u:p:hv", ['save-to=', 'user=', 'password=', 'help', 'version', 'skip-init'])
+    for opt,value in opts:
+        if opt in ('-h', '--help'):
+            print help
+            exit(0)
+        elif opt in ('-v', '--version'):
+            print 'yd version 0.0.2'
+            exit(0)
+        elif opt in ('-s', '--save-to'):
+            whcache = value
+        elif opt in ('-u', '--user='):
+            username = value
+        elif opt in ('-p', '--password='):
+            password = value
+        elif opt == '--skip-init':
+            skipinit = True
 
-    def get_soundmark(self):
-        pa = re.compile('<span class="phonetic">(.*?)</span>')
-        self.soundmark = pa.findall(self.html)
+    #if has inited
+    handler = fetch_initdata()
+    if handler:
+        handler(args)
+        exit(0)
 
-    def get_definition(self):
-        pa = re.compile('<div class="trans-container">.*?<ul>(.*?)</ul>.*?</div>', re.S)
-        tmp = pa.search(self.html)
-        defht = ''
-        if tmp:
-            defht = tmp.group(1)
-        if self.isen:
-            pdef = re.compile('<li>(.*?)</li>')
-            items = pdef.findall(defht)
-            for item in items:
-                self.definition.append(item)
-        else:
-            pp = re.compile('<p.*?>(.*?)</p>', re.S)
-            bp = pp.findall(defht)
-            ps = re.compile('<(span|a).*?>([^<^>]*?)</(span|a)>', re.S)
-            for item in bp:
-                bs = ps.findall(item)
-                exi = ''
-                for w in bs:
-                    if ('.' in w[1] and len(w[1]) <= 4):
-                        exi += (w[1] + ' ' * (4-len(w[1])))
-                    else:
-                        exi += w[1]
-                self.definition.append(exi)
+    #haven't init the cache directory
+    if whcache != 'disk' and dbcache.init(username, password):
+        pass
+    else:
+        diskcache.init()
 
 
-    def get_examples(self):
-        pbi = re.compile('<div id="bilingual".*?>(.*?)</div>', re.S)
-        bi = (pbi.search(self.html)).group()
-        pp = re.compile('<p>(.*?)</p>', re.S)
-        bp = pp.findall(bi)
-        ps = re.compile('<span.*?>(.*?)</span>', re.S)
-        for item in bp:
-            bs = ps.findall(item)
-            exi = ''
-            for w in bs:
-                exi += w
-            exi = re.sub('<.?\w>', '', exi)
-            self.examples.append(exi)
-
-    def output(self):
-        print '\033[0;31m', self.word,
-        for mark in self.soundmark:
-            print '\033[0;32m', mark,
-        print ''
-        for item in self.definition:
-            print '\033[0;33m', item
-        print ''
-        count = 0
-        pcn = re.compile(r'[\x80-\xff]+', re.S)
-        for exi in self.examples:
-            count = count + 1
-            excn = pcn.search(exi)
-            if (count % 2 != 0):
-                print '\033[0;34m', 'ex.', exi
-            else:
-                print '\033[0;35m', '   ', exi
-        print '\033[0m'
-
-    def search(self, word):
-        try:
-            self.word = word
-            pcn = re.compile(r'[\x80-\xff]+', re.S)
-            if pcn.search(word):
-                self.isen = False
-            self.get_html()
-            self.get_soundmark()
-            self.get_definition()
-            self.get_examples()
-            self.output()
-        except:
-            print 'word \'%s\' not found!' %(self.word)
-
-def main():
-    tmp = dicti()
-    if len(sys.argv) > 1:
-        tmp.search(sys.argv[1])
-
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    parse_args()
