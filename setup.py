@@ -5,20 +5,24 @@ import sys
 
 from setuptools import setup, find_packages
 
+def readme():
+    with open('README.md') as f:
+        return f.read()
+
 setup(
     name = "yd",
     version = "0.0.1",
     author = "wierton",
     author_email = '2980493052@qq.com',
-    url = "",
+    url = "https://github.com/wierton/dict",
     description = 'A terminal bilingual dictionary',
-
-    packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+    long_description = readme(),
+    packages=['yd'],
     include_package_data=True,
-    zip_safe=False,
     entry_points={
         'console_scripts':[
-            'yd = yd.yd:main'
+            'yd=yd.yd:main'
             ]
-        }
+        },
+    zip_safe=False,
 )

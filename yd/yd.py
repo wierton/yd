@@ -1,10 +1,11 @@
 #!/bin/python
 #coding=utf-8
 
-import ydsearch
 import sys, getopt
-import diskcache, dbcache
 from getpass import getuser
+
+import ydsearch
+import diskcache, dbcache
 
 def fetch_initdata():
     try:
@@ -59,10 +60,10 @@ def parse_args():
 
     #if has inited
     handler = fetch_initdata()
-    if handler and not whcache:
-        return handler, args
-    elif skipinit:
+    if skipinit:
         return None, args
+    elif handler and not whcache:
+        return handler, args
 
     #haven't init the cache directory
     if whcache != 'disk' and dbcache.init(username, password):
@@ -73,6 +74,9 @@ def parse_args():
 
 def output(dic):
     if not dic:
+        return None
+    if dic[0] == None:
+        print "word '{}' not found!".format(dic[1])
         return None
     print '\033[0;31m', dic[0],
     for mark in dic[1]:
@@ -91,12 +95,11 @@ def output(dic):
     print '\033[0m'
     return True
 
-if __name__ == "__main__":
+def main():
 #   search here means fetch data and output relative info
     handler, args = parse_args()
     if args:
         if not handler or not output(handler.search(args)):
             dictinfo = ydsearch.search(args)
-            output(dictinfo)
-            if handler:
+            if output(dictinfo) and handler:
                 handler.save(dictinfo)

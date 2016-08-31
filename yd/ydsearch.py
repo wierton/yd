@@ -81,5 +81,5 @@ def search(args):
         get_definition()
         get_examples()
         return word, soundmark, definition, examples
-    finally:
-        pass
+    except:
+        return None, word, None, None
