@@ -53,7 +53,7 @@ def parse_args():
 
     #if has inited
     handler = fetch_initdata()
-    if handler:
+    if handler and not whcache:
         return handler, args
     elif skipinit:
         return None, args
