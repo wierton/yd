@@ -1,18 +1,19 @@
 #!/bin/python
 #coding=utf-8
 
-import ydsearch as yd
-import sys, getopts
+import ydsearch
+import sys, getopt
 import diskcache, dbcache
 
 def fetch_initdata():
     from getpass import getuser
-    with open('/home/{}/.yd/.info'.format(getuser())) as fp:
-        initinfo = fp.read().split('&')[0]
-        if initinfo == 'db':
-            return dbcache
-        elif initinfo == 'disk':
-            return diskcache
+    try:
+        with open('/home/{}/.yd/.info'.format(getuser())) as fp:
+            initinfo = fp.read().split('&')[0]
+            if initinfo == 'db':
+                return dbcache
+            elif initinfo == 'disk':
+                return diskcache
     except:
         return None
 
@@ -30,7 +31,10 @@ def parse_args():
     help += "-v, --version           "
     help += "output version information and exit\n"
 
-    opts, args = getopts.getopts(sys.argv[1:], "s:u:p:hv", ['save-to=', 'user=', 'password=', 'help', 'version', 'skip-init'])
+    whcache  = ''
+    skipinit = False
+    username = password = ""
+    opts, args = getopt.getopt(sys.argv[1:], "s:u:p:hv", ['save-to=', 'user=', 'password=', 'help', 'version', 'skip-init'])
     for opt,value in opts:
         if opt in ('-h', '--help'):
             print help
@@ -62,6 +66,8 @@ def parse_args():
     return None, args
 
 def output(dic):
+    if not dic:
+        return None
     print '\033[0;31m', dic[0],
     for mark in dic[1]:
         print '\033[0;32m', mark,
@@ -77,11 +83,14 @@ def output(dic):
         else:
             print '\033[0;35m', '   ', exi
     print '\033[0m'
+    return True
 
 if __name__ == "__main__":
 #   search here means fetch data and output relative info
     handler, args = parse_args()
-    if not handler or not handler.search(args)
-        dictinfo = yd.search(args)
-        output(dictinfo)
-        handler.save(dictinfo)
+    if args:
+        if not handler or not output(handler.search(args)):
+            dictinfo = ydsearch.search(args)
+            output(dictinfo)
+            if handler:
+                handler.save(dictinfo)

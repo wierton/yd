@@ -1,3 +1,4 @@
 build/*
 dist/*
 yd.egg-info/*
+*.pyc

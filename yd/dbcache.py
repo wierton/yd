@@ -1,3 +1,4 @@
+import sys
 import MySQLdb as sql
 from urllib import quote, unquote
 
@@ -50,6 +51,7 @@ def init(username="", password=""):
     #check if has access permission to database
     check_priviledge()
 
+    #base on the create privilege
     if priviledge & create_priv:
         db = sql.connect('localhost', user, passwd, '')
         cursor = db.cursor()
@@ -88,6 +90,6 @@ def save(dic):
 
     db = sql.connect('localhost', user, passwd, "yd_cache")
     cursor = db.cursor()
-    cursor.execute('insert into cache values ("{}", "{}", "{}", "{}")'.format(dic.words soundmark, definition, examples))
+    cursor.execute('insert into cache values ("{}", "{}", "{}", "{}")'.format(dic[0], soundmark, definition, examples))
     db.commit()
     db.close()
