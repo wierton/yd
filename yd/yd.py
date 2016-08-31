@@ -4,9 +4,9 @@
 import ydsearch
 import sys, getopt
 import diskcache, dbcache
+from getpass import getuser
 
 def fetch_initdata():
-    from getpass import getuser
     try:
         with open('/home/{}/.yd/.info'.format(getuser())) as fp:
             initinfo = fp.read().split('&')[0]
@@ -30,11 +30,13 @@ def parse_args():
     help += "display the help and exit\n"
     help += "-v, --version           "
     help += "output version information and exit\n"
+    help += "--reset                 "
+    help += "reset to initial state\n"
 
     whcache  = ''
     skipinit = False
     username = password = ""
-    opts, args = getopt.getopt(sys.argv[1:], "s:u:p:hv", ['save-to=', 'user=', 'password=', 'help', 'version', 'skip-init'])
+    opts, args = getopt.getopt(sys.argv[1:], "s:u:p:hv", ['save-to=', 'user=', 'password=', 'help', 'version', 'skip-init', 'reset'])
     for opt,value in opts:
         if opt in ('-h', '--help'):
             print help
@@ -50,6 +52,10 @@ def parse_args():
             password = value
         elif opt == '--skip-init':
             skipinit = True
+        elif opt == '--reset':
+            import commands
+            commands.getoutput('rm -rf /home/{}/.yd'.format(getuser()))
+            exit(0)
 
     #if has inited
     handler = fetch_initdata()
