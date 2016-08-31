@@ -72,7 +72,7 @@ def init(username="", password=""):
         return False
 
     # record info in .info
-    commands.getoutput('echo "db&{}&{}" > {}'.format(username, password, info_file))
+    commands.getoutput('echo "db&{}&{}&" > {}'.format(username, password, info_file))
     return True
 
 def search(args):
@@ -81,14 +81,12 @@ def search(args):
         text = fp.read().split('&')
         username = text[1]
         password = text[2]
-        print username, password
 
     # query database
     word = args[0]
     qword = quote(word)
-    db = sql.connect('localhost', username, password, '')
+    db = sql.connect('localhost', username, password, "yd_cache")
     cursor = db.cursor()
-    cursor.execute('use yd_cache')
     cursor.execute('select * from dict where word="{}"'.format(qword))
     result = cursor.fetchone()
     db.close()
@@ -99,15 +97,20 @@ def search(args):
         return word, soundmark, definition, examples
 
 def save(dic):
+    # fetch username and password
+    with open(info_file) as fp:
+        text = fp.read().split('&')
+        username = text[1]
+        password = text[2]
+
     # [word, soundmark, definition, examples]
-    print '***'
     word = quote(dic[0])
     soundmark = '&'.join(map(quote, dic[1]))
     definition = '&'.join(map(quote, dic[2]))
     examples = '&'.join(map(quote, dic[3]))
 
-    db = sql.connect('localhost', user, passwd, "yd_cache")
+    db = sql.connect('localhost', username, password, "yd_cache")
     cursor = db.cursor()
-    cursor.execute('insert into cache values ("{}", "{}", "{}", "{}")'.format(word, soundmark, definition, examples))
+    cursor.execute('insert into dict values ("{}", "{}", "{}", "{}")'.format(word, soundmark, definition, examples))
     db.commit()
     db.close()
