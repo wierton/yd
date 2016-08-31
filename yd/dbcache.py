@@ -157,6 +157,7 @@ def save(dic):
     definition = '&'.join(map(quote, dic[2]))
     examples = '&'.join(map(quote, dic[3]))
 
+    # connect to the database and execute corresponding operations
     db = sql.connect('localhost', username, password, "yd_cache")
     cursor = db.cursor()
     cursor.execute('insert into dict values ("{}", "{}", "{}", "{}")'.format(word, soundmark, definition, examples))
