@@ -96,10 +96,12 @@ def output(dic):
     return True
 
 def main():
-#   search here means fetch data and output relative info
     handler, args = parse_args()
     if args:
         if not handler or not output(handler.search(args)):
             dictinfo = ydsearch.search(args)
             if output(dictinfo) and handler:
                 handler.save(dictinfo)
+
+if __name__ == "__main__":
+    main()

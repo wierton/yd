@@ -13,7 +13,7 @@ setup(
     name = "yd",
     version = "0.0.1",
     author = "wierton",
-    author_email = '2980493052@qq.com',
+    author_email = 'nickouxianfei@gmail.com',
     url = "https://github.com/wierton/dict",
     description = 'A terminal bilingual dictionary',
     long_description = readme(),
