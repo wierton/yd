@@ -67,7 +67,7 @@ def check_privilege(username, password, privilege=31):
         db = sql.connect('localhost', username, password, "")
     except:
         print 'Bad username or password!'
-        exit(-1)
+        return False
     cursor = db.cursor()
     cursor.execute('select Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv from mysql.user where user="{}"'.format(username))
     arr = cursor.fetchone()
@@ -100,6 +100,10 @@ def init(username="", password=""):
 
     #check if has access permission to database
     privilege = check_privilege(username, password)
+
+    # if ret value is False, return False
+    if not privilege:
+        return False
 
     #base on the create privilege
     if privilege & create_priv:
