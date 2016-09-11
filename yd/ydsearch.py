@@ -70,16 +70,34 @@ def get_examples(html):
         examples.append(exi)
     return examples
 
+def get_suggestion(word):
+    url = 'http://dsuggest.ydstatic.com/suggest.s?query=' + word + '&keyfrom=dict2.index.suggest&o=form&rn=10&h=4&le=eng'
+    request = urllib2.Request(url)
+    response = urllib2.urlopen(request)
+    html = response.read()
+    unquote_html = urllib.unquote(html)
+    ma = re.findall(r'<td align=left.*?>(.*?)</td', unquote_html)
+    if ma:
+        print 'do you mean: ' + ', '.join(ma) + ' ?'
+
 def search(word_list):
     global isen
     word = word_list[0]
     pcn = re.compile(r'[\x80-\xff]+', re.S)
     if pcn.search(word) : isen = False
     html = get_html(word)
-    if "<h4> 您要找的是不是:</h4>" in html:
+    # fail to connect the internet
+    if not html or "<h4> 您要找的是不是:</h4>" in html:
+        get_suggestion(word_list[0])
         return None, word, None, None
     else:
         soundmark = get_soundmark(html)
         definition = get_definition(html)
         examples = get_examples(html)
         return word, soundmark, definition, examples
+
+def test():
+    search(sys.argv[1:])
+
+if __name__ == "__main__":
+    test()

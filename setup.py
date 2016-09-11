@@ -11,7 +11,7 @@ def readme():
 
 setup(
     name = "yd",
-    version = "0.0.1",
+    version = "0.0.3",
     author = "wierton",
     author_email = 'nickouxianfei@gmail.com',
     url = "https://github.com/wierton/dict",
