@@ -43,7 +43,7 @@ def parse_args():
             print help
             exit(0)
         elif opt in ('-v', '--version'):
-            print 'yd version 0.0.2'
+            print 'yd version 0.0.3'
             exit(0)
         elif opt in ('-s', '--save-to'):
             whcache = value

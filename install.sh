@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python setup.py install --record ~/.yd_record
+mkdir -p ~/.yd
+python setup.py install --record ~/.yd/.yd_record
