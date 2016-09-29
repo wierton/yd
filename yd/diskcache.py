@@ -2,6 +2,7 @@
 #coding=utf-8
 
 import re
+import os, commands
 from urllib import quote, unquote
 from getpass import getuser
 
@@ -10,7 +11,6 @@ cache_file = yd_dir + '/.cache'
 info_file = yd_dir + '/.info'
 
 def init():
-    import os, commands
     if not os.path.exists(yd_dir):
         os.makedirs(yd_dir)
     status, output = commands.getstatusoutput('rm -f {0} && touch {0}'.format(cache_file))

@@ -1,7 +1,7 @@
 #!/bin/python
 #coding=utf-8
 
-import sys, getopt
+import os, sys, getopt
 from getpass import getuser
 
 import ydsearch
