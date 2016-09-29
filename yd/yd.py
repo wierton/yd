@@ -9,7 +9,7 @@ import diskcache, dbcache
 
 def fetch_initdata():
     try:
-        with open('/home/{}/.yd/.info'.format(getuser())) as fp:
+        with open('{}/.yd/.info'.format(os.environ['HOME'])) as fp:
             initinfo = fp.read().split('&')[0]
             if initinfo == 'db':
                 return dbcache
@@ -55,7 +55,7 @@ def parse_args():
             skipinit = True
         elif opt == '--reset':
             import commands
-            commands.getoutput('rm -rf /home/{}/.yd'.format(getuser()))
+            commands.getoutput('rm -rf {}/.yd'.format(os.environ['HOME']))
             exit(0)
 
     #if has inited

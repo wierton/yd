@@ -5,7 +5,7 @@ import re
 from urllib import quote, unquote
 from getpass import getuser
 
-yd_dir = '/home/{}/.yd'.format(getuser())
+yd_dir = '{}/.yd'.format(os.environ['HOME'])
 cache_file = yd_dir + '/.cache'
 info_file = yd_dir + '/.info'
 
@@ -19,6 +19,7 @@ def init():
         exit(-1)
 
     commands.getoutput('echo "disk&" > {}'.format(info_file))
+    commands.getoutput('touch {}'.format(cache_file))
 
 def search(args):
     word = args[0]

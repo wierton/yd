@@ -11,7 +11,7 @@ update_priv = 1<<2
 delete_priv = 1<<1
 create_priv = 1<<0
 
-yd_dir = '/home/{}/.yd'.format(getpass.getuser())
+yd_dir = '{}/.yd'.format(os.environ['HOME'])
 info_file = yd_dir + '/.info'
 
 global_username = ''
