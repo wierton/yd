@@ -7,7 +7,7 @@
  * pinyin and bilingual example sentence for chinese word
 
 ### Install
-	python setup.py install
+	sudo ./install.sh
 
 ### Help
 ```
