@@ -2,9 +2,8 @@
 
 import os
 import sys
-import yd
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 def readme():
     with open('README.md') as f:
@@ -12,7 +11,7 @@ def readme():
 
 setup(
     name = "yd",
-    version = yd.version.__version__,
+    version = '1.0.1',
     author = "wierton",
     author_email = 'nickouxianfei@gmail.com',
     url = "https://github.com/wierton/dict",
