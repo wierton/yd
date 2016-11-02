@@ -1,11 +1,16 @@
 #!/bin/python
 #coding=utf-8
 
+import version
 import os, sys, getopt
 from getpass import getuser
 
 import ydsearch
 import diskcache, dbcache
+
+def write_to_file(filename, content):
+    with open(filename, 'wb+') as fp:
+        fp.write(content)
 
 def fetch_initdata():
     try:
@@ -30,20 +35,22 @@ def parse_args():
     help += "-h, --help              "
     help += "display the help and exit\n"
     help += "-v, --version           "
-    help += "output version information and exit\n"
+    help += "print version information and exit\n"
+    help += "-o, --output=filename   "
+    help += "output cached word to file\n"
     help += "--reset                 "
     help += "reset to initial state\n"
 
     whcache  = ''
     skipinit = False
     username = password = ""
-    opts, args = getopt.getopt(sys.argv[1:], "s:u:p:hv", ['save-to=', 'user=', 'password=', 'help', 'version', 'skip-init', 'reset'])
+    opts, args = getopt.getopt(sys.argv[1:], "s:u:p:o:hv", ['save-to=', 'user=', 'password=', 'output=', 'help', 'version', 'skip-init', 'reset'])
     for opt,value in opts:
         if opt in ('-h', '--help'):
             print help
             exit(0)
         elif opt in ('-v', '--version'):
-            print 'yd version 0.0.3'
+            print 'yd version {}'.format(version.__version__)
             exit(0)
         elif opt in ('-s', '--save-to'):
             whcache = value
@@ -51,6 +58,10 @@ def parse_args():
             username = value
         elif opt in ('-p', '--password='):
             password = value
+        elif opt in ('-o', '--output='):
+            output_string='\n\n'.join([output(d, color=('',)*5, stdout=False) for d in dbcache.searchall()])
+            write_to_file(value, output_string)
+            exit(0)
         elif opt == '--skip-init':
             skipinit = True
         elif opt == '--reset':
@@ -72,28 +83,33 @@ def parse_args():
         diskcache.init()
     return None, args
 
-def output(dic):
+def output(dic, color=('\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34m', '\033[0;35m'), stdout=True):
+    output_string = ''
     if not dic:
         return None
     if dic[0] == None:
-        print "word '{}' not found!".format(dic[1])
+        output_string+="word '{}' not found!".format(dic[1])
         return None
-    print '\033[0;31m', dic[0],
+    output_string+='{}{} '.format(color[0], dic[0])
     for mark in dic[1]:
-        print '\033[0;32m', mark,
-    print ''
+        output_string+='{} {}'.format(color[1], mark)
+    output_string+='\n'
     for item in dic[2]:
-        print '\033[0;33m', item
-    print ''
+        output_string+='{} {}\n'.format(color[2], item)
+    output_string+='\n'
     count = 0
     for exi in dic[3]:
         count = count + 1
         if (count % 2 != 0):
-            print '\033[0;34m', 'ex.', exi
+            output_string+='{} ex.{}\n'.format(color[3], exi)
         else:
-            print '\033[0;35m', '   ', exi
-    print '\033[0m'
-    return True
+            output_string+='{}    {}\n'.format(color[4], exi)
+    if stdout:
+        output_string+='\033[0m'
+        print output_string
+        return True
+    else:
+        return output_string
 
 def main():
     handler, args = parse_args()

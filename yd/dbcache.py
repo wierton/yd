@@ -151,6 +151,19 @@ def search(args):
         examples = map(unquote, result[3].split('&'))
         return word, soundmark, definition, examples
 
+def searchall():
+    #fetch username and password
+    username, password = fetch_loginfo()
+
+    # query database
+    db = sql.connect('localhost', username, password, "yd_cache")
+    cursor = db.cursor()
+    cursor.execute('select * from dict;')
+    result = cursor.fetchall()
+    db.close()
+    if result:
+        return [(unquote(i), map(unquote, j.split('&')), map(unquote, k.split('&')), map(unquote, l.split('&'))) for i,j,k,l in result]
+
 def save(dic):
     #fetch username and password
     username, password = fetch_loginfo()

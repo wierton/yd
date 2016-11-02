@@ -2,6 +2,7 @@
 
 import os
 import sys
+import yd
 
 from setuptools import setup, find_packages
 
@@ -11,7 +12,7 @@ def readme():
 
 setup(
     name = "yd",
-    version = "0.0.3",
+    version = yd.version.__version__,
     author = "wierton",
     author_email = 'nickouxianfei@gmail.com',
     url = "https://github.com/wierton/dict",
