@@ -20,6 +20,7 @@ setup(
     long_description = readme(),
     packages=['yd'],
     include_package_data=True,
+    install_requires=['MySQL'],
     entry_points={
         'console_scripts':[
             'yd=yd.yd:main'
