@@ -3,6 +3,7 @@
 import os
 import sys
 
+from yd.version import __version__
 from setuptools import setup
 
 def readme():
@@ -11,7 +12,7 @@ def readme():
 
 setup(
     name = "yd",
-    version = '1.0.1',
+    version = __version__,
     author = "wierton",
     author_email = 'nickouxianfei@gmail.com',
     url = "https://github.com/wierton/dict",
