@@ -1,7 +1,7 @@
 import os, sys
 import getpass
 import commands
-import MySQLdb as sql
+import _MySQLdb as sql
 from urllib import quote, unquote
 from Crypto.PublicKey import RSA 
 
