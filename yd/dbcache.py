@@ -153,7 +153,7 @@ def search(args):
         soundmark = map(unquote, result[1].split('&'))
         definition = map(unquote, result[2].split('&'))
         examples = map(unquote, result[3].split('&'))
-        return word, soundmark, definition, examples
+        return True, word, soundmark, definition, examples
 
 def searchall():
     #fetch username and password
@@ -177,10 +177,10 @@ def save(dic):
     username, password = fetch_loginfo()
 
     # [word, soundmark, definition, examples]
-    word = quote(dic[0])
-    soundmark = '&'.join(map(quote, dic[1]))
-    definition = '&'.join(map(quote, dic[2]))
-    examples = '&'.join(map(quote, dic[3]))
+    word = quote(dic[1])
+    soundmark = '&'.join(map(quote, dic[2]))
+    definition = '&'.join(map(quote, dic[3]))
+    examples = '&'.join(map(quote, dic[4]))
 
     # connect to the database and execute corresponding operations
     db = sql.connect('localhost', username, password, "yd_cache")

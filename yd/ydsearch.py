@@ -5,6 +5,7 @@ import re
 import sys
 import urllib
 import urllib2
+import json
 
 isen = True
 url  = 'http://dict.youdao.com/w/eng/'
@@ -57,7 +58,11 @@ def get_definition(html):
 def get_examples(html):
     examples = []
     pa_bilingual = re.compile('<div id="bilingual".*?>(.*?)</div>', re.S)
-    ma_bilingual = (pa_bilingual.search(html)).group()
+    pa_group = pa_bilingual.search(html)
+    if pa_group:
+        ma_bilingual = pa_group.group()
+    else:
+        return []
     pa_p = re.compile('<p>(.*?)</p>', re.S)
     ma_p = pa_p.findall(ma_bilingual)
     pa_span = re.compile('<span.*?>(.*?)</span>', re.S)
@@ -80,6 +85,17 @@ def get_suggestion(word):
     if ma:
         print 'do you mean: ' + ', '.join(ma) + ' ?'
 
+def get_definition_by_ydapi(word):
+    if not isen:word = urllib.quote(word)
+    url = 'http://fanyi.youdao.com/openapi.do?keyfrom=yddict123&key=185765201&type=data&doctype=json&version=1.1&q={}'.format(word)
+    request = urllib2.Request(url)
+    response = urllib2.urlopen(request)
+    json_stream = response.read()
+    ret_info = json.loads(json_stream)
+    if 'errorCode' in ret_info and ret_info['errorCode'] == 0:
+        return ret_info['translation']
+
+
 def search(word_list):
     global isen
     word = word_list[0]
@@ -88,13 +104,15 @@ def search(word_list):
     html = get_html(word)
     # fail to connect the internet
     if not html or "<h4> 您要找的是不是:</h4>" in html:
-        get_suggestion(word_list[0])
-        return None, word, None, None
+        get_suggestion(word)
+        return False, word, None, None, None
     else:
         soundmark = get_soundmark(html)
         definition = get_definition(html)
         examples = get_examples(html)
-        return word, soundmark, definition, examples
+        if not definition:
+            definition = get_definition_by_ydapi(word)
+        return True, word, soundmark, definition, examples
 
 def test():
     search(sys.argv[1:])

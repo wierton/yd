@@ -87,26 +87,28 @@ def output(dic, color=('\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34m', '
     output_string = ''
     if not dic:
         return None
-    if dic[0] == None:
+    if dic[0] == False:
         output_string+="word '{}' not found!".format(dic[1])
         return None
-    output_string+='{}{} '.format(color[0], dic[0])
-    for mark in dic[1]:
-        output_string+='{} {}'.format(color[1], mark)
+    output_string+='{}{} \033[0m'.format(color[0], dic[1])
+    for mark in dic[2]:
+        if not mark:continue
+        output_string+='{} {}\033[0m'.format(color[1], mark)
     output_string+='\n'
-    for item in dic[2]:
-        output_string+='{} {}\n'.format(color[2], item)
-    output_string+='\n'
+    for item in dic[3]:
+        if not item:continue
+        output_string+='{} {}\033[0m\n'.format(color[2], item)
+    if dic[3]:output_string+='\n'
     count = 0
-    for exi in dic[3]:
+    for exi in dic[4]:
         count = count + 1
+        if not exi:continue
         if (count % 2 != 0):
-            output_string+='{} ex.{}\n'.format(color[3], exi)
+            output_string+='{} ex.{}\033[0m\n'.format(color[3], exi)
         else:
-            output_string+='{}    {}\n'.format(color[4], exi)
+            output_string+='{}    {}\033[0m\n'.format(color[4], exi)
     if stdout:
-        output_string+='\033[0m'
-        print output_string
+        print output_string, 
         return True
     else:
         return output_string

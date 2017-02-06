@@ -30,14 +30,14 @@ def search(args):
                 soundmark = map(unquote, result[1].split('&'))
                 definition = map(unquote, result[2].split('&'))
                 examples = map(unquote, result[3].split('&'))
-                return word, soundmark, definition, examples
+                return True, word, soundmark, definition, examples
 
 def save(dic):
     #   [word, soundmark, definition, examples]
-    word = quote(dic[0])
-    soundmark = '&'.join(map(quote, dic[1]))
-    definition = '&'.join(map(quote, dic[2]))
-    examples = '&'.join(map(quote, dic[3]))
+    word = quote(dic[1])
+    soundmark = '&'.join(map(quote, dic[2]))
+    definition = '&'.join(map(quote, dic[3]))
+    examples = '&'.join(map(quote, dic[4]))
     with open(cache_file, 'a+') as fp:
         if not re.search('^{} '.format(word), fp.read(), re.M):
             fp.write("{} {} {} {}\n".format(word, soundmark, definition, examples))
