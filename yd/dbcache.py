@@ -5,6 +5,12 @@ import _MySQLdb as sql
 from urllib import quote, unquote
 from Crypto.PublicKey import RSA 
 
+try:
+    sql = __import__("MySQLdb")
+except:
+    print("SQL module not found!")
+    exit(-1)
+
 select_priv = 1<<4
 insert_priv = 1<<3
 update_priv = 1<<2
@@ -140,7 +146,11 @@ def search(args):
     # query database
     word = args[0]
     qword = quote(word)
-    db = sql.connect('localhost', username, password, "yd_cache")
+    try:
+        db = sql.connect('localhost', username, password, "yd_cache")
+    except:
+        print("fail to connect the local database")
+        exit(-1)
     cursor = db.cursor()
     cursor.execute('select * from dict where word="{}"'.format(qword))
     result = cursor.fetchone()
@@ -156,7 +166,11 @@ def searchall():
     username, password = fetch_loginfo()
 
     # query database
-    db = sql.connect('localhost', username, password, "yd_cache")
+    try:
+        db = sql.connect('localhost', username, password, "yd_cache")
+    except:
+        print("fail to connect the local database")
+        exit(-1)
     cursor = db.cursor()
     cursor.execute('select * from dict;')
     result = cursor.fetchall()
