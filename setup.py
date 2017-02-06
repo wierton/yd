@@ -1,9 +1,6 @@
-#coding:utf-8
-
 import os
 import sys
 
-from yd.version import __version__
 from setuptools import setup
 
 def readme():
@@ -12,13 +9,13 @@ def readme():
 
 setup(
     name = "yd",
-    version = __version__,
+    version = '1.2.3',
     author = "wierton",
     author_email = 'nickouxianfei@gmail.com',
     url = "https://github.com/wierton/dict",
     description = 'A terminal bilingual dictionary',
     long_description = readme(),
-    packages=['yd', 'yd/_MySQLdb', 'yd/_MySQLdb/constants'],
+    packages=['yd', 'yd._MySQLdb', 'yd._MySQLdb.constants'],
     include_package_data=True,
     #install_requires=['MySQL'],
     entry_points={

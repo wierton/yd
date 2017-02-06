@@ -1,12 +1,13 @@
 #!/bin/python
 #coding=utf-8
 
-import version
 import os, sys, getopt
 from getpass import getuser
 
 import ydsearch
 import diskcache, dbcache
+
+__version__ = '1.2.3'
 
 def write_to_file(filename, content):
     with open(filename, 'wb+') as fp:
@@ -47,10 +48,10 @@ def parse_args():
     opts, args = getopt.getopt(sys.argv[1:], "s:u:p:o:hv", ['save-to=', 'user=', 'password=', 'output=', 'help', 'version', 'skip-init', 'reset'])
     for opt,value in opts:
         if opt in ('-h', '--help'):
-            print help
+            print(help)
             exit(0)
         elif opt in ('-v', '--version'):
-            print 'yd version {}'.format(version.__version__)
+            print('yd version {}'.format(__version__))
             exit(0)
         elif opt in ('-s', '--save-to'):
             whcache = value
@@ -108,7 +109,7 @@ def output(dic, color=('\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34m', '
         else:
             output_string+='{}    {}\033[0m\n'.format(color[4], exi)
     if stdout:
-        print output_string, 
+        print(output_string)
         return True
     else:
         return output_string

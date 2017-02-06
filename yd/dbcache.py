@@ -66,7 +66,7 @@ def check_privilege(username, password, privilege=31):
     try:
         db = sql.connect('localhost', username, password, "")
     except:
-        print 'Bad username or password!'
+        print('Bad username or password!')
         return False
     cursor = db.cursor()
     cursor.execute('select Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv from mysql.user where user="{}"'.format(username))
@@ -74,26 +74,26 @@ def check_privilege(username, password, privilege=31):
     db.close()
 
     if not arr[0] in ('Y', 'y'):
-        print 'can\'t access the database'
+        print('can\'t access the database')
         privilege = privilege & 0xf
     elif not arr[1] in ('Y', 'y'):
-        print 'can\'t insert item into the database'
+        print('can\'t insert item into the database')
         privilege = privilege & 0x17
     elif not arr[2] in ('Y', 'y'):
-        print 'can\'t update old value in the database'
+        print('can\'t update old value in the database')
         privilege = privilege & 0x1b
     elif not arr[3] in ('Y', 'y'):
-        print 'can\'t delete error value in database'
+        print('can\'t delete error value in database')
         privilege = privilege & 0x1d
     elif not arr[4] in ('Y', 'y'):
-        print 'can\'t create table for caching'
+        print('can\'t create table for caching')
         privilege = privilege & 0x1e
     return privilege
 
 def init(username="", password=""):
     # query username and password to connect local database
     if username == '' or password == '':
-        print 'To cache the search history, we need access permission for your local database'
+        print('To cache the search history, we need access permission for your local database')
         sys.stdout.write('Username: ')
         username = raw_input()
         password = getpass.getpass()
@@ -121,7 +121,7 @@ def init(username="", password=""):
         db.commit()
         db.close()
     else:
-        print 'fail to create database "yd_cache"'
+        print('fail to create database "yd_cache"')
         return False
 
     encrypt_username = quote(key.encrypt(username, 20)[0])

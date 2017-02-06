@@ -17,9 +17,9 @@ def get_html(word):
         response  = urllib2.urlopen(request)
         html = response.read()
         return html
-    except urllib2.URLError, e:
+    except urllib2.URLError as e:
         if hasattr(e, 'reason'):
-            print e.reason
+            print(e.reason)
 
 def get_soundmark(html):
     pa = re.compile('<span class="phonetic">(.*?)</span>')
@@ -83,7 +83,7 @@ def get_suggestion(word):
     unquote_html = urllib.unquote(html)
     ma = re.findall(r'<td align=left.*?>(.*?)</td', unquote_html)
     if ma:
-        print 'do you mean: ' + ', '.join(ma) + ' ?'
+        print('do you mean: ' + ', '.join(ma) + ' ?')
 
 def get_definition_by_ydapi(word):
     if not isen:word = urllib.quote(word)

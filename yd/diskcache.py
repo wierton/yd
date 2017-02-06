@@ -15,7 +15,7 @@ def init():
         os.makedirs(yd_dir)
     status, output = commands.getstatusoutput('rm -f {0} && touch {0}'.format(cache_file))
     if status != 0:
-        print output
+        print(output)
         exit(-1)
 
     commands.getoutput('echo "disk&" > {}'.format(info_file))

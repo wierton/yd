@@ -31,7 +31,7 @@ yd [options] word
  * 'db' means search history will be cached to local database
  * 'disk' means ~/.yd/.cache
 * yd -u username -p password
- * directly set username and password for your database instead program ask you to fill in
+ * provide username and password of your database
 
 ### Examples
 ![](ex.png)
