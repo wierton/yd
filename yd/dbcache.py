@@ -5,12 +5,6 @@ import _MySQLdb as sql
 from urllib import quote, unquote
 from Crypto.PublicKey import RSA 
 
-try:
-    sql = __import__("MySQLdb")
-except:
-    print("SQL module not found!")
-    exit(-1)
-
 select_priv = 1<<4
 insert_priv = 1<<3
 update_priv = 1<<2

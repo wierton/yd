@@ -18,9 +18,9 @@ setup(
     url = "https://github.com/wierton/dict",
     description = 'A terminal bilingual dictionary',
     long_description = readme(),
-    packages=['yd'],
+    packages=['yd', 'yd/_MySQLdb', 'yd/_MySQLdb/constants'],
     include_package_data=True,
-    install_requires=['MySQL'],
+    #install_requires=['MySQL'],
     entry_points={
         'console_scripts':[
             'yd=yd.yd:main'
