@@ -93,7 +93,7 @@ def get_definition_by_ydapi(word):
     json_stream = response.read()
     ret_info = json.loads(json_stream)
     if 'errorCode' in ret_info and ret_info['errorCode'] == 0:
-        return ret_info['translation']
+        return [d.encode('utf8') for d in ret_info['translation']]
 
 
 def search(word_list):

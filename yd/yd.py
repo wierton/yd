@@ -65,34 +65,43 @@ def test_output(dic, color=('\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34
             print exi
 
 def output(dic, color=('\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34m', '\033[0;35m'), stdout=True):
-    output_string = ''
+    output = ''
     if not dic:
         return None
+    # word
     if dic[0] == False:
-        output_string+="word '{}' not found!".format(dic[1])
+        output+="word '{}' not found!".format(dic[1])
         return None
-    output_string+='{}{} \033[0m'.format(color[0], dic[1])
+    output+='{}{} \033[0m'.format(color[0], dic[1])
+
+    # soundmark
     for mark in dic[2]:
         if not mark:continue
-        output_string+='{} {}\033[0m'.format(color[1], mark)
-    output_string+='\n'
+        output+='{} {}\033[0m'.format(color[1], mark)
+    output+='\n'
+
+    # definition
     for item in dic[3]:
-        if not item:continue
-        output_string+='{} {}\033[0m\n'.format(color[2], item)
-    if dic[3]:output_string+='\n'
+        if not item or len(item) == 0:
+            continue
+        output+='{} {}\033[0m\n'.format(color[2], item)
+    if dic[3]:output+='\n'
+
+    # examples
     count = 0
     for exi in dic[4]:
         count = count + 1
-        if not exi:continue
+        if not exi or len(exi) == 0:continue
         if (count % 2 != 0):
-            output_string+='{} ex.{}\033[0m\n'.format(color[3], exi)
+            output+='{} ex.{}\033[0m\n'.format(color[3], exi)
         else:
-            output_string+='{}    {}\033[0m\n'.format(color[4], exi)
+            output+='{}    {}\033[0m\n'.format(color[4], exi)
+
     if stdout:
-        print(output_string)
+        print output
         return True
     else:
-        return output_string
+        return output
 
 def main():
     dbcache.init()
