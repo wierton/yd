@@ -54,7 +54,7 @@ def search(args):
     result = cursor.fetchone()
     db.close()
     if result:
-        result = [s.encode('ascii') for s in cursor.fetchone()]
+        result = [s.encode('ascii') for s in result]
         soundmark = map(unquote, result[1].split('&'))
         definition = map(unquote, result[2].split('&'))
         examples = map(unquote, result[3].split('&'))
