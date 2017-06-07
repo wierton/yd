@@ -61,21 +61,20 @@ def search(args):
         return True, word, soundmark, definition, examples
 
 def searchall():
-    #fetch username and password
-    username, password = fetch_loginfo()
-
     # query database
     try:
-        db = sql.connect('localhost', username, password, "yd_cache")
+        db = sql.connect(dbfile)
     except:
         print("fail to connect the local database")
         exit(-1)
+
     cursor = db.cursor()
-    cursor.execute('select * from dict;')
+    cursor.execute('select * from dict')
     result = cursor.fetchall()
     db.close()
     if result:
-        return [(unquote(i), map(unquote, j.split('&')), map(unquote, k.split('&')), map(unquote, l.split('&'))) for i,j,k,l in result]
+        result = [[j.encode('ascii') for j in i] for i in result]
+        return [(True, unquote(i), map(unquote, j.split('&')), map(unquote, k.split('&')), map(unquote, l.split('&'))) for i,j,k,l in result]
 
 def save(dic):
     # [word, soundmark, definition, examples]

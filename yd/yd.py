@@ -6,8 +6,11 @@ import os, sys, getopt
 import ydsearch
 import dbcache
 
-__version__ = '1.3.0'
+__version__ = '1.3.1'
 
+def write_to_file(filename, content):
+    with open(filename, 'wb+') as fp:
+        fp.write(content)
 
 def parse_args():
     help  = "yd [options|word]\n"
@@ -30,7 +33,10 @@ def parse_args():
             print('yd version {}'.format(__version__))
             exit(0)
         elif opt in ('-o', '--output='):
-            output_string='\n\n'.join([output(d, color=('',)*5, stdout=False) for d in dbcache.searchall()])
+            output_string='\n\n'.join([
+                sformat(d, color=('',)*6) 
+                for d in dbcache.searchall()
+            ])
             write_to_file(value, output_string)
             exit(0)
         elif opt == '--reset':
@@ -47,7 +53,7 @@ def test_output(dic, color=('\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34
     if dic[0] == False:
         print "word '{}' not found!".format(dic[1])
         return None
-    print dic[1]
+
     for mark in dic[2]:
         if not mark:continue
         print mark
@@ -64,27 +70,27 @@ def test_output(dic, color=('\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34
         else:
             print exi
 
-def output(dic, color=('\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34m', '\033[0;35m'), stdout=True):
+def sformat(dic, color=('\033[0m', '\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34m', '\033[0;35m')):
     output = ''
     if not dic:
         return None
+
     # word
     if dic[0] == False:
-        output+="word '{}' not found!".format(dic[1])
         return None
-    output+='{}{} \033[0m'.format(color[0], dic[1])
+    output+='{}{} '.format(color[1], dic[1], color[0])
 
     # soundmark
     for mark in dic[2]:
         if not mark:continue
-        output+='{} {}\033[0m'.format(color[1], mark)
+        output+='{} {}{}'.format(color[2], mark, color[0])
     output+='\n'
 
     # definition
     for item in dic[3]:
         if not item or len(item) == 0:
             continue
-        output+='{} {}\033[0m\n'.format(color[2], item)
+        output+='{} {}{}\n'.format(color[3], item, color[0])
     if dic[3]:output+='\n'
 
     # examples
@@ -93,15 +99,11 @@ def output(dic, color=('\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34m', '
         count = count + 1
         if not exi or len(exi) == 0:continue
         if (count % 2 != 0):
-            output+='{} ex.{}\033[0m\n'.format(color[3], exi)
+            output+='{} ex.{}{}\n'.format(color[4], exi, color[0])
         else:
-            output+='{}    {}\033[0m\n'.format(color[4], exi)
+            output+='{}    {}{}\n'.format(color[5], exi, color[0])
 
-    if stdout:
-        print output
-        return True
-    else:
-        return output
+    return output
 
 def main():
     dbcache.init()
@@ -111,10 +113,13 @@ def main():
     if not args:
         return
 
-    if not output(dbcache.search(args)):
+    output = sformat(dbcache.search(args))
+    if not output:
         dictinfo = ydsearch.search(args)
-        if output(dictinfo):
+        output = sformat(dictinfo)
+        if output:
             dbcache.save(dictinfo)
+    print output
 
 if __name__ == "__main__":
     main()
