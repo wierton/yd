@@ -6,7 +6,7 @@ import os, sys, getopt
 import ydsearch
 import dbcache
 
-__version__ = '1.2.3'
+__version__ = '1.3.0'
 
 
 def parse_args():
@@ -16,12 +16,9 @@ def parse_args():
     help += "display the help and exit\n"
     help += "-v, --version           "
     help += "print version information and exit\n"
-    help += "-o, --output=filename   "
-    help += "output cached word to file\n"
     help += "--reset                 "
     help += "reset to initial state\n"
 
-    whcache  = ''
     skipinit = False
 
     opts, args = getopt.getopt(sys.argv[1:], "o:hv", ['output=', 'help', 'version', 'skip-init', 'reset'])
@@ -36,18 +33,10 @@ def parse_args():
             output_string='\n\n'.join([output(d, color=('',)*5, stdout=False) for d in dbcache.searchall()])
             write_to_file(value, output_string)
             exit(0)
-        elif opt == '--skip-init':
-            skipinit = True
         elif opt == '--reset':
             import commands
             commands.getoutput('rm -rf {}/.yd'.format(os.environ['HOME']))
             exit(0)
-
-    #if has inited
-    if skipinit:
-        return args
-    elif not whcache:
-        return args
 
     return args
 

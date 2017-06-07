@@ -1,4 +1,4 @@
-#yd
+# yd
 
 * introduction
  * A terminal bilingual dictionary by youdao API

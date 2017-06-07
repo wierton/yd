@@ -9,13 +9,13 @@ def readme():
 
 setup(
     name = "yd",
-    version = '1.2.3',
+    version = '1.3.0',
     author = "wierton",
     author_email = 'nickouxianfei@gmail.com',
     url = "https://github.com/wierton/dict",
     description = 'A terminal bilingual dictionary',
     long_description = readme(),
-    packages=['yd', 'yd._MySQLdb', 'yd._MySQLdb.constants'],
+    packages=['yd'],
     include_package_data=True,
     #install_requires=['MySQL'],
     entry_points={
