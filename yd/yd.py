@@ -48,9 +48,11 @@ def parse_args():
 
 
 def adjust_encode(dic):
+    import locale
+
     dic = list(dic)
 
-    termial_encoding = sys.stdout.encoding
+    termial_encoding = locale.getpreferredencoding()
 
     # word: byte string -> unicode -> target encoding
     dic[1] = dic[1].decode('utf-8').encode(termial_encoding)

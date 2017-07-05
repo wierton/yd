@@ -5,7 +5,15 @@ import sqlite3 as sql
 from urllib import quote, unquote
 
 
-yd_dir = '{}/.yd'.format(os.environ['HOME'])
+if 'HOME' in os.environ:
+    homedir = os.environ['HOME']
+elif 'USERPROFILE' in os.environ:
+    homedir = os.environ['USERPROFILE']
+else:
+    print("cannot found home directory")
+    exit(-1)
+
+yd_dir = '{}/.yd'.format(homedir)
 dbfile = '{}/dict.db'.format(yd_dir)
 
 
