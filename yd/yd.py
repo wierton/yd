@@ -46,31 +46,32 @@ def parse_args():
 
     return args
 
-def test_output(dic, color=('\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34m', '\033[0;35m'), stdout=True):
-    output_string = ''
-    if not dic:
-        return None
-    if dic[0] == False:
-        print "word '{}' not found!".format(dic[1])
-        return None
 
-    for mark in dic[2]:
-        if not mark:continue
-        print mark
-    for item in dic[3]:
-        if not item:continue
-        print item
+def adjust_encode(dic):
+    dic = list(dic)
 
-    count = 0
-    for exi in dic[4]:
-        count = count + 1
-        if not exi:continue
-        if (count % 2 != 0):
-            print exi
-        else:
-            print exi
+    termial_encoding = sys.stdout.encoding
+
+    # word: byte string -> unicode -> target encoding
+    dic[1] = dic[1].decode('utf-8').encode(termial_encoding)
+
+    # soundmark
+    dic[2] = [s.decode('utf-8').encode(termial_encoding) for s in dic[2]]
+
+    # soundmark
+    dic[3] = [s.decode('utf-8').encode(termial_encoding) for s in dic[3]]
+
+    # soundmark
+    dic[4] = [s.decode('utf-8').encode(termial_encoding) for s in dic[4]]
+
+    return dic
+
+
 
 def sformat(dic, color=('\033[0m', '\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34m', '\033[0;35m')):
+
+    dic = adjust_encode(dic)
+
     output = ''
     if not dic:
         return None
