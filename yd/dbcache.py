@@ -74,9 +74,9 @@ def search(args):
         return {
                 'result':False,
                 'word':word,
-				'soundmark':[],
-				'definition':[],
-				'examples':[]
+                'soundmark':[],
+                'definition':[],
+                'examples':[]
                 }
 
 def searchall():

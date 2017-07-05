@@ -9,7 +9,7 @@ def readme():
 
 setup(
     name = "yd",
-    version = '1.3.3',
+    version = '1.3.4',
     author = "wierton",
     author_email = 'nickouxianfei@gmail.com',
     url = "https://github.com/wierton/dict",

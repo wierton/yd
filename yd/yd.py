@@ -18,7 +18,7 @@ default_colors = {
             'examples_even':'\033[35m',
         }
 
-__version__ = '1.3.3'
+__version__ = '1.3.4'
 
 def write_to_file(filename, content):
     with open(filename, 'wb+') as fp:
@@ -45,9 +45,10 @@ def parse_args():
         elif opt in ('-o', '--output='):
             output_string='\n\n'.join([
                 sformat(d, color={
-					'word':'', 'soundmark':'', 'definition':'',
-					'examples_odd':'', 'examples_even':''
-					}) 
+                    'word':'', 'soundmark':'', 'definition':'',
+                    'examples_odd':'', 'examples_even':'',
+                    'reset':''
+                    }) 
                 for d in dbcache.searchall()
             ])
             write_to_file(value, output_string)
