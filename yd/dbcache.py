@@ -1,26 +1,23 @@
 import os, sys
-import getpass
 import commands
 import sqlite3 as sql
 from urllib import quote, unquote
 
+import environ
 
-if 'HOME' in os.environ:
-    homedir = os.environ['HOME']
-elif 'USERPROFILE' in os.environ:
-    homedir = os.environ['USERPROFILE']
-else:
-    print("cannot found home directory")
-    exit(-1)
+preferred_encoding = environ.preferred_encoding
+
+homedir = environ.homedir
 
 yd_dir = '{}/.yd'.format(homedir)
-dbfile = '{}/dict.db'.format(yd_dir)
+dbfile = '{}/dict.db'.format(yd_dir).decode(preferred_encoding)
 
 
 def init():
-    # record info in .info
     if not os.path.exists(yd_dir):
         os.makedirs(yd_dir)
+
+    db = sql.connect(dbfile)
     try:
         db = sql.connect(dbfile)
     except:
@@ -66,7 +63,21 @@ def search(args):
         soundmark = map(unquote, result[1].split('&'))
         definition = map(unquote, result[2].split('&'))
         examples = map(unquote, result[3].split('&'))
-        return True, word, soundmark, definition, examples
+        return {
+                'result':True,
+                'word':word,
+                'soundmark':soundmark,
+                'definition':definition,
+                'examples':examples
+                }
+    else:
+        return {
+                'result':False,
+                'word':word,
+				'soundmark':[],
+				'definition':[],
+				'examples':[]
+                }
 
 def searchall():
     # query database
@@ -82,14 +93,25 @@ def searchall():
     db.close()
     if result:
         result = [[j.encode('ascii') for j in i] for i in result]
-        return [(True, unquote(i), map(unquote, j.split('&')), map(unquote, k.split('&')), map(unquote, l.split('&'))) for i,j,k,l in result]
+        return [
+                {
+                    'result':True,
+                    'word':unquote(i),
+                    'soundmark':map(unquote, j.split('&')),
+                    'definition':map(unquote, k.split('&')),
+                    'examples':map(unquote, l.split('&'))
+                }
+                for i,j,k,l in result
+            ]
+    else:
+        return []
 
 def save(dic):
     # [word, soundmark, definition, examples]
-    word = quote(dic[1])
-    soundmark = '&'.join(map(quote, dic[2]))
-    definition = '&'.join(map(quote, dic[3]))
-    examples = '&'.join(map(quote, dic[4]))
+    word = quote(dic['word'])
+    soundmark = '&'.join(map(quote, dic['soundmark']))
+    definition = '&'.join(map(quote, dic['definition']))
+    examples = '&'.join(map(quote, dic['examples']))
 
     # connect to the database and execute corresponding operations
     db = sql.connect(dbfile)

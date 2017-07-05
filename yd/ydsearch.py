@@ -105,14 +105,26 @@ def search(word_list):
     # fail to connect the internet
     if not html or "<h4> 您要找的是不是:</h4>" in html:
         get_suggestion(word)
-        return False, word, None, None, None
+        return {
+				'result':False,
+				'word':word,
+				'soundmark':[],
+				'definition':[],
+				'examples':[]
+				}
     else:
         soundmark = get_soundmark(html)
         definition = get_definition(html)
         examples = get_examples(html)
         if not definition:
             definition = get_definition_by_ydapi(word)
-        return True, word, soundmark, definition, examples
+        return {
+				'result':True,
+				'word':word,
+				'soundmark':soundmark,
+				'definition':definition,
+				'examples':examples,
+				}
 
 def test():
     search(sys.argv[1:])

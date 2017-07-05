@@ -1,12 +1,24 @@
 #!/bin/python
 #coding=utf-8
 
+import environ
 import os, sys, getopt
 
 import ydsearch
 import dbcache
 
-__version__ = '1.3.1'
+preferred_encoding = environ.preferred_encoding
+
+default_colors = {
+            'reset'        :'\033[0m',
+            'word'         :'\033[31m',
+            'soundmark'    :'\033[32m',
+            'definition'   :'\033[33m',
+            'examples_odd' :'\033[34m',
+            'examples_even':'\033[35m',
+        }
+
+__version__ = '1.3.3'
 
 def write_to_file(filename, content):
     with open(filename, 'wb+') as fp:
@@ -22,9 +34,7 @@ def parse_args():
     help += "--reset                 "
     help += "reset to initial state\n"
 
-    skipinit = False
-
-    opts, args = getopt.getopt(sys.argv[1:], "o:hv", ['output=', 'help', 'version', 'skip-init', 'reset'])
+    opts, args = getopt.getopt(sys.argv[1:], "o:hv", ['output=', 'help', 'version', 'reset'])
     for opt,value in opts:
         if opt in ('-h', '--help'):
             print(help)
@@ -34,77 +44,71 @@ def parse_args():
             exit(0)
         elif opt in ('-o', '--output='):
             output_string='\n\n'.join([
-                sformat(d, color=('',)*6) 
+                sformat(d, color={
+					'word':'', 'soundmark':'', 'definition':'',
+					'examples_odd':'', 'examples_even':''
+					}) 
                 for d in dbcache.searchall()
             ])
             write_to_file(value, output_string)
             exit(0)
         elif opt == '--reset':
             import commands
-            commands.getoutput('rm -rf {}/.yd'.format(os.environ['HOME']))
+            commands.getoutput('rm -rf {}/.yd'.format(environ.homedir))
             exit(0)
 
-    return args
+    return [s.decode(preferred_encoding).encode('utf-8') for s in args]
 
 
 def adjust_encode(dic):
-    import locale
-
-    dic = list(dic)
-
-    termial_encoding = locale.getpreferredencoding()
+    ret_dic = {'result':dic['result']}
 
     # word: byte string -> unicode -> target encoding
-    dic[1] = dic[1].decode('utf-8').encode(termial_encoding)
+    ret_dic['word'] = dic['word'].decode('utf-8').encode(preferred_encoding)
 
-    # soundmark
-    dic[2] = [s.decode('utf-8').encode(termial_encoding) for s in dic[2]]
+    for key in dic:
+        if type(dic[key]) != type([]):
+            continue
+        ret_dic[key] = [s.decode('utf-8').encode(preferred_encoding, errors='ignore') for s in dic[key]]
 
-    # soundmark
-    dic[3] = [s.decode('utf-8').encode(termial_encoding) for s in dic[3]]
-
-    # soundmark
-    dic[4] = [s.decode('utf-8').encode(termial_encoding) for s in dic[4]]
-
-    return dic
+    return ret_dic
 
 
 
-def sformat(dic, color=('\033[0m', '\033[0;31m', '\033[0;32m', '\033[0;33m', '\033[0;34m', '\033[0;35m')):
-
-    dic = adjust_encode(dic)
-
-    output = ''
-    if not dic:
+def sformat(byte_dic, color=default_colors):
+    
+    if not byte_dic:
         return None
 
-    # word
-    if dic[0] == False:
-        return None
-    output+='{}{} '.format(color[1], dic[1], color[0])
+    dic = adjust_encode(byte_dic)
+
+    if not dic['result']:
+        return "word '{}' not found".format(dic['word'])
+
+    output = '{}{} '.format(color['word'], dic['word'], color['reset'])
 
     # soundmark
-    for mark in dic[2]:
+    for mark in dic['soundmark']:
         if not mark:continue
-        output+='{} {}{}'.format(color[2], mark, color[0])
+        output+='{} {}{}'.format(color['soundmark'], mark, color['reset'])
     output+='\n'
 
     # definition
-    for item in dic[3]:
+    for item in dic['definition']:
         if not item or len(item) == 0:
             continue
-        output+='{} {}{}\n'.format(color[3], item, color[0])
-    if dic[3]:output+='\n'
+        output+='{} {}{}\n'.format(color['definition'], item, color['reset'])
+    if dic['definition']:output+='\n'
 
     # examples
     count = 0
-    for exi in dic[4]:
+    for exi in dic['examples']:
         count = count + 1
         if not exi or len(exi) == 0:continue
         if (count % 2 != 0):
-            output+='{} ex.{}{}\n'.format(color[4], exi, color[0])
+            output+='{} ex.{}{}\n'.format(color['examples_odd'], exi, color['reset'])
         else:
-            output+='{}    {}{}\n'.format(color[5], exi, color[0])
+            output+='{}    {}{}\n'.format(color['examples_even'], exi, color['reset'])
 
     return output
 
@@ -115,12 +119,13 @@ def main():
 
     if not args:
         return
-
-    output = sformat(dbcache.search(args))
-    if not output:
+    
+    dictinfo = dbcache.search(args)
+    output = sformat(dictinfo)
+    if not dictinfo['result']:
         dictinfo = ydsearch.search(args)
         output = sformat(dictinfo)
-        if output:
+        if dictinfo['result']:
             dbcache.save(dictinfo)
     print output
 
