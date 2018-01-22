@@ -45,9 +45,8 @@ def init():
     db.close()
     return True
 
-def search(args):
+def search(word):
     # query database
-    word = args[0]
     qword = quote(word)
     try:
         db = sql.connect(dbfile)

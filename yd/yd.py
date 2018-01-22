@@ -117,14 +117,14 @@ def main():
     dbcache.init()
 
     args = parse_args()
+    if not args: return
 
-    if not args:
-        return
+    word = ' '.join(args)
     
-    dictinfo = dbcache.search(args)
+    dictinfo = dbcache.search(word)
     output = sformat(dictinfo)
     if not dictinfo['result']:
-        dictinfo = ydsearch.search(args)
+        dictinfo = ydsearch.search(word)
         output = sformat(dictinfo)
         if dictinfo['result']:
             dbcache.save(dictinfo)

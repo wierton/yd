@@ -96,9 +96,8 @@ def get_definition_by_ydapi(word):
         return [d.encode('utf8') for d in ret_info['translation']]
 
 
-def search(word_list):
+def search(word):
     global isen
-    word = word_list[0]
     pcn = re.compile(r'[\x80-\xff]+', re.S)
     if pcn.search(word) : isen = False
     html = get_html(word)
