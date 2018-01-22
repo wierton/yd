@@ -128,7 +128,7 @@ def main():
         output = sformat(dictinfo)
         if dictinfo['result']:
             dbcache.save(dictinfo)
-    print output
+    print(output)
 
 if __name__ == "__main__":
     main()

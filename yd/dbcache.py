@@ -1,7 +1,10 @@
 import os, sys
-import commands
 import sqlite3 as sql
-from urllib import quote, unquote
+
+try:
+    from urllib import quote, unquote
+except:
+    from urllib.parse import quote, unquote
 
 import environ
 

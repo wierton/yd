@@ -4,22 +4,22 @@
 import re
 import sys
 import urllib
-import urllib2
 import json
 
 isen = True
 url  = 'http://dict.youdao.com/w/eng/'
 
-def get_html(word):
+def request(url):
     try:
-        global url
-        request   = urllib2.Request(url + word)
+        import urllib2
+        request   = urllib2.Request(url)
         response  = urllib2.urlopen(request)
-        html = response.read()
-        return html
-    except urllib2.URLError as e:
-        if hasattr(e, 'reason'):
-            print(e.reason)
+        return response.read()
+    except:
+        import urllib3
+        http = urllib3.PoolManager()
+        response = http.request(url)
+        return response.data
 
 def get_soundmark(html):
     pa = re.compile('<span class="phonetic">(.*?)</span>')
@@ -77,9 +77,7 @@ def get_examples(html):
 
 def get_suggestion(word):
     url = 'http://dsuggest.ydstatic.com/suggest.s?query=' + word + '&keyfrom=dict2.index.suggest&o=form&rn=10&h=4&le=eng'
-    request = urllib2.Request(url)
-    response = urllib2.urlopen(request)
-    html = response.read()
+    html = request(url)
     unquote_html = urllib.unquote(html)
     ma = re.findall(r'<td align=left.*?>(.*?)</td', unquote_html)
     if ma:
@@ -88,29 +86,27 @@ def get_suggestion(word):
 def get_definition_by_ydapi(word):
     if not isen:word = urllib.quote(word)
     url = 'http://fanyi.youdao.com/openapi.do?keyfrom=yddict123&key=185765201&type=data&doctype=json&version=1.1&q={}'.format(word)
-    request = urllib2.Request(url)
-    response = urllib2.urlopen(request)
-    json_stream = response.read()
+    json_stream = request(url)
     ret_info = json.loads(json_stream)
     if 'errorCode' in ret_info and ret_info['errorCode'] == 0:
         return [d.encode('utf8') for d in ret_info['translation']]
 
 
 def search(word):
-    global isen
+    global isen, url
     pcn = re.compile(r'[\x80-\xff]+', re.S)
     if pcn.search(word) : isen = False
-    html = get_html(word)
+    html = request(url + word)
     # fail to connect the internet
     if not html or "<h4> 您要找的是不是:</h4>" in html:
         get_suggestion(word)
         return {
-				'result':False,
-				'word':word,
-				'soundmark':[],
-				'definition':[],
-				'examples':[]
-				}
+                'result':False,
+                'word':word,
+                'soundmark':[],
+                'definition':[],
+                'examples':[]
+                }
     else:
         soundmark = get_soundmark(html)
         definition = get_definition(html)
@@ -118,12 +114,12 @@ def search(word):
         if not definition:
             definition = get_definition_by_ydapi(word)
         return {
-				'result':True,
-				'word':word,
-				'soundmark':soundmark,
-				'definition':definition,
-				'examples':examples,
-				}
+                'result':True,
+                'word':word,
+                'soundmark':soundmark,
+                'definition':definition,
+                'examples':examples,
+                }
 
 def test():
     search(sys.argv[1:])
