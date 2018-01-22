@@ -7,6 +7,8 @@ import os, sys, getopt
 import ydsearch
 import dbcache
 
+from version import __version__
+
 preferred_encoding = environ.preferred_encoding
 
 default_colors = {
@@ -17,8 +19,6 @@ default_colors = {
             'examples_odd' :'\033[34m',
             'examples_even':'\033[35m',
         }
-
-__version__ = '1.3.4'
 
 def write_to_file(filename, content):
     with open(filename, 'wb+') as fp:

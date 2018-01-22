@@ -2,6 +2,7 @@ import os
 import sys
 
 from setuptools import setup
+from yd.version import __version__
 
 def readme():
     with open('README.md') as f:
@@ -9,7 +10,7 @@ def readme():
 
 setup(
     name = "yd",
-    version = '1.3.4',
+    version = __version__,
     author = "wierton",
     author_email = 'nickouxianfei@gmail.com',
     url = "https://github.com/wierton/dict",
